@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('utils')
+const utils = require('@magical-cli/utils')
 module.exports = core;
 
 function core() {
