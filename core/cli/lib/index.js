@@ -1,7 +1,10 @@
 'use strict';
 
-module.exports = index;
+const utils = require('utils')
+module.exports = core;
 
-function index() {
+function core() {
     // TODO
+  console.log('exec core')
+  utils()
 }

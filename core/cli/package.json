@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "import-local": "^3.0.2",
+    "npmlog": "^4.1.2",
     "utils": "file:../../utils/utils"
   },
   "gitHead": "a75ae3497bdcc539ac4c78655d6aa0d68da10286"
