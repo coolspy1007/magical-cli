@@ -1,5 +1,5 @@
 {
-  "name": "@magic-cli/utils",
+  "name": "@magical-cli/utils",
   "version": "1.0.0",
   "description": "tools",
   "author": "起点 <coolspy@qq.com>",
@@ -25,5 +25,6 @@
   },
   "bugs": {
     "url": "https://github.com/coolspy1007/magical-cli/issues"
-  }
+  },
+  "gitHead": "a75ae3497bdcc539ac4c78655d6aa0d68da10286"
 }
