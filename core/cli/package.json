@@ -1,6 +1,6 @@
 {
   "name": "@magical-cli/core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "core",
   "keywords": [
     "core",
@@ -36,9 +36,9 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
+    "@magical-cli/utils": "file:../../utils/utils",
     "import-local": "^3.0.2",
-    "npmlog": "^4.1.2",
-    "@magical-cli/utils": "file:../../utils/utils"
+    "npmlog": "^4.1.2"
   },
   "gitHead": "a75ae3497bdcc539ac4c78655d6aa0d68da10286"
 }
