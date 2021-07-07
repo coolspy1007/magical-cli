@@ -1,11 +1,11 @@
-# `utils`
+# `@magical-cli/log`
 
 > TODO: description
 
 ## Usage
 
 ```
-const utils = require('utils');
+const log = require('@magical-cli/log');
 
 // TODO: DEMONSTRATE API
 ```

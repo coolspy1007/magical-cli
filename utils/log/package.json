@@ -1,7 +1,7 @@
 {
-  "name": "@magical-cli/utils",
+  "name": "@magical-cli/log",
   "version": "1.0.2",
-  "description": "tools",
+  "description": "> TODO: description",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
   "license": "MIT",
@@ -26,5 +26,7 @@
   "bugs": {
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
-  "gitHead": "a75ae3497bdcc539ac4c78655d6aa0d68da10286"
+  "dependencies": {
+    "npmlog": "^4.1.2"
+  }
 }
