@@ -7,25 +7,78 @@ const colors = require('colors/safe') // log 字体颜色
 const semver = require('semver') // 比较版本
 const userHome = require('os').homedir() // 获取用户主目录  user-home包已弃用
 const pathExists = require('path-exists')
-const { getLastVersion } = require('@magical-cli/npm')
-const { LOWEST_NODE_VERSION, CLI_NAME, DEFAULT_CLI_HOME } = require('./constant')
-
-let config = {}
+const { getLastUsableVersion } = require('@magical-cli/npm')
+// const { init } = require('@magical-cli/init')
+const exec = require('@magical-cli/exec')
+const { LOWEST_NODE_VERSION, CLI_NAME, DEFAULT_CLI_HOME,CLI_ENV_FILE_NAME } = require('./constant')
+const { program } = require('commander')
 
 async function core(argv) {
   // log.success('success', 'success....')
   try {
-    showPkgVersion()
-    checkNodeVersion()
-    checkRoot()
-    checkUserHome()
-    checkInputArgs()
-    checkEnv()
-    await checkPkgVersion()
-    // log.verbose('debug', "test debug log")
+    await prepare()
+    registerCommander()
   } catch (e) {
-    log.error('', e.message ? e.message : e)
+    if(program.opts().debug){
+      console.log(e)
+    }else{
+      log.error('', colors.red(e.message ? e.message : e))
+    }
+    // log.error('', e)
   }
+}
+
+/**
+ * 注册 commands
+ */
+function registerCommander() {
+  program
+    .name(Object.keys(pkg.bin)[0])
+    .usage(`<command> [options]`)
+    .version(pkg.version)
+    .option('-d, --debug', '开启调试模式', false)
+    .option('-tp, --targetPath <targetPath>', '指定本地调试文件路径', '')
+
+  program.on('option:targetPath', () => {
+    // 监听 targetPath option ，挂载到全局环境变量
+    // 通过挂载到环境变量 env 上，来获取一些全局属性是比较好的方式
+    process.env.CLI_TARGET_PATH = program.opts().targetPath
+  })
+
+  program
+    .command('init <projectName>')
+    .option('-f, --force', '强制初始化项目')
+    .action(exec)
+  // debug 模式监听
+  program.on('option:debug', () => {
+    if (program.opts().debug) {
+      log.setLevel('verbose')
+    }
+  })
+
+  // 未知命令监听
+  program.on('command:*', (obj) => {
+    const availableCommands = program.commands.map(cmd => cmd.name())
+    log.error('未知命令', obj[0])
+    if (availableCommands.length > 0) {
+      console.log(colors.blue('可用命令：' + availableCommands.join(',')))
+    }
+  })
+  program.parse(process.argv)
+}
+
+/**
+ * 准备阶段
+ * @returns {Promise<void>}
+ */
+async function prepare() {
+  showPkgVersion()
+  checkRoot()
+  checkUserHome()
+  // checkInputArgs()  // 参数检查通过 commander 处理
+  checkEnv()
+  await checkPkgVersion()
+  log.verbose('debug', "test debug log")
 }
 
 /**
@@ -35,18 +88,6 @@ function showPkgVersion() {
   log.notice('当前版本', pkg.version)
 }
 
-
-/**
- * 检查node版本
- */
-function checkNodeVersion() {
-  const currentVersion = process.version
-  const lowestVersion = LOWEST_NODE_VERSION
-  if (semver.lt(currentVersion, lowestVersion)) {
-    throw new Error(colors.red(`${CLI_NAME} 需要安装 v${lowestVersion} 以上版本的 Node.js`))
-  }
-
-}
 
 /**
  * 检查 root 账户，降级处理
@@ -67,9 +108,12 @@ function checkUserHome() {
   }
 }
 
+
 /**
  * 脚手架注册之前，检查入参，用于全局 debug 调试
  */
+
+/* 移除！ 交给 commander 处理
 function checkInputArgs() {
   const minimist = require('minimist')
   const args = minimist(process.argv.slice(2))
@@ -85,7 +129,7 @@ function checkArgs(args) {
     log.setLevel('info')
   }
 }
-
+*/
 /**
  * 检查环境变量
  * 可以将一些必要信息存入环境变量，比如用户名密码及一些默认配置信息
@@ -93,7 +137,7 @@ function checkArgs(args) {
 function checkEnv() {
   // dotenv 可以读取环境变量配置，并挂载到 process.env
   const dotEnv = require('dotenv')
-  const dotEnvPath = path.resolve(userHome, '.magical-cli-env')
+  const dotEnvPath = path.resolve(userHome, CLI_ENV_FILE_NAME)
   // 如果存在 .magical-cli-env 则从 .magical-cli-env 获取环境变量配置并挂载到 process.env
   if (pathExists.sync(dotEnvPath)) {
     dotEnv.config({
@@ -102,7 +146,7 @@ function checkEnv() {
   }
   // 根据环境变量，创建默认配置，挂载到 process.env
   createDefaultEnv()
-  log.verbose('环境变量', process.env.CLI_HOME_PATH)
+  log.verbose('CLI_HOME_PATH', process.env.CLI_HOME_PATH)
 }
 
 function createDefaultEnv() {
@@ -125,10 +169,11 @@ async function checkPkgVersion() {
   // 2、调用 npm API，获取所有版本号
   // 3、提取所有版本号，比对哪些版本号是大于当前版本号的
   // 4、获取最新的版本号，提示用户更新到最新版本
-  const lastVersion = await getLastVersion(npmName,currentVersion)
-  if(lastVersion){
-    log.warn('更新版本',colors.yellow(`有最新的版本 v${lastVersion} ,可以通过 npm i ${npmName} -g 更新`))
+  const lastVersion = await getLastUsableVersion(npmName, currentVersion)
+  if (lastVersion) {
+    log.warn('更新版本', colors.yellow(`有最新的版本 v${lastVersion} ,可以通过 npm i ${npmName} -g 更新`))
   }
 }
+
 
 module.exports = core

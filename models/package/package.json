@@ -1,7 +1,7 @@
 {
-  "name": "@magical-cli/npm",
+  "name": "@magical-cli/package",
   "version": "1.0.2",
-  "description": "get npm info",
+  "description": "magical-cli npm modules",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
   "license": "MIT",
@@ -27,10 +27,11 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "colors": "^1.4.0",
-    "npminstall": "^4.11.0",
-    "semver": "^7.3.5",
-    "url-join": "^4.0.1"
+    "@magical-cli/npm": "file:../../utils/npm",
+    "@magical-cli/tools": "file:../../utils/tools",
+    "fs-extra": "^10.0.0",
+    "path-exists": "^4.0.0",
+    "pkg-dir": "^5.0.0",
+    "semver": "^7.3.5"
   }
 }

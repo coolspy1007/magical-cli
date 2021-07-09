@@ -1,8 +1,15 @@
 'use strict'
+/**
+ * @description npm 工具库
+ * @author 起点丶
+ */
+
+
 const axios = require('axios')
 const semver = require('semver')
 const urlJoin = require('url-join')
 const colors = require('colors')
+const npmInstall = require('npminstall')
 
 /**
  * 获取 npm 包的信息
@@ -56,13 +63,13 @@ function getLatestVersions(baseVersion, versions) {
 }
 
 /**
- * 获取最新的可更新版本
+ * 获取最新的可更版本
  * @param npmName  包名
  * @param currentVersion  当前版本
  * @param registry  npm API
  * @returns {Promise<string|null>}
  */
-async function getLastVersion(npmName, currentVersion, registry) {
+async function getLastUsableVersion(npmName, currentVersion, registry) {
   const versions = await getNpmVersions(npmName, registry)
   // console.log(versions)
   const latestVersions = getLatestVersions(currentVersion, versions)
@@ -74,10 +81,42 @@ async function getLastVersion(npmName, currentVersion, registry) {
   }
 }
 
+/**
+ * 获取 package 的最新版本
+ * @param npmName
+ * @param registry
+ * @returns {Promise<*>}
+ */
+async function getLatestVersion(npmName, registry) {
+  const versions = await getNpmVersions(npmName, registry)
+  return versions.sort((a, b) => {
+    // 返回值 < 0 , 则 a 排在 b 前边
+    return semver.gt(a, b) ? -1 : 1
+  })[0]
+
+}
+
 // 获取默认 API 地址,  isOriginal=true原始的 npm 镜像  false 则是 taobao 镜像（默认）
 function _getDefaultRegistry(isOriginal = false) {
   return isOriginal ? 'https://registry.npmjs.org' : 'https://registry.npm.taobao.org'
 }
 
+// 下载 npm 包
+function packageInstall({ root, storeDir, registry, pkgs }) {
+  return npmInstall({
+    root,
+    // storeDir, // 默认安装位置，root + 'node_modules'
+    registry: registry ? registry : _getDefaultRegistry(),
+    pkgs
+  })
+}
 
-module.exports = { getLastVersion, getLatestVersions, getNpmInfo, getNpmVersions }
+
+module.exports = {
+  getLastUsableVersion,
+  getLatestVersions,
+  getNpmInfo,
+  getNpmVersions,
+  packageInstall,
+  getLatestVersion
+}

@@ -5,6 +5,7 @@ const log = require('npmlog')
 // 传入LOG_LEVEL 改变 level，默认 info 2000
 log.setLevel = (level) => {
   // log.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info'
+  process.env.LOG_LEVEL = level
   log.level = level
 }
 
