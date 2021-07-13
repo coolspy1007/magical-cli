@@ -68,7 +68,7 @@ async function exec() {
     // 在当前 node 主进程调用
     // require(rootFilePath)(argArr)
     // 在 node 子进程中调用
-    console.log('主进程：',process.pid)
+    // console.log('主进程：',process.pid)
     const code = `require("${rootFilePath}").call(null,${JSON.stringify(argArr)})`
     const childProcess = spawn('node', ['-e', code], {
       cwd: process.cwd(),
@@ -76,7 +76,7 @@ async function exec() {
     })
     // 当产生子进程时执行
     childProcess.on('spawn',()=>{
-      console.log('spawn...',process.pid)
+      // console.log('子进程spawn...',process.pid)
     })
     // 监听 error
     childProcess.on('error', e => {

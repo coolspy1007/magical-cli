@@ -28,6 +28,13 @@
   },
   "dependencies": {
     "@magical-cli/command": "file:../../models/command",
-    "@magical-cli/log": "file:../../utils/log"
+    "@magical-cli/log": "file:../../utils/log",
+    "@magical-cli/package": "file:../../models/package",
+    "@magical-cli/request": "file:../../utils/request",
+    "@magical-cli/tools": "file:../../utils/tools",
+    "colors": "^1.4.0",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.1.1",
+    "semver": "^7.3.5"
   }
 }

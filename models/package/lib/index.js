@@ -47,6 +47,14 @@ class Package {
   }
 
   /**
+   * 格式化 version 去除前边的字符
+   */
+  formatVersion() {
+    const version = semver.clean(this.packageVersion.replace(/^[\^~=vV]*/g, ''))
+    this.packageVersion = version ? version : this.packageVersion
+  }
+
+  /**
    * 获取真实存在的缓存目录，不存在则返回 null
    * @param version 根据版本获取，默认当前 package 版本
    * @returns {string|null}
@@ -66,23 +74,20 @@ class Package {
     if (this.packageVersion === 'latest') {
       this.packageVersion = await getLatestVersion(this.packageName)
     }
+    // this.packageVersion = semver.clean(this.packageVersion.replace(/^[\^~=vV]*/g,''))
   }
 
-  // 判断 package 是否存在
+  // 判断 package 是否存在(已经安装)
   async exists() {
     await this.prepare()
     // 先判断是否存在缓存目录，如果不存在缓存目录，则判断安装目录
-    if (!this.getRealCacheFilePath()) {
-      return this.existsFilePath
-    } else {
-      return true
-    }
+    return this.getRealCacheFilePath();
   }
 
   // 安装 package
   async install(version = this.packageVersion) {
     await this.prepare()
-    console.log(`install package ${this.packageName}@${version}...`)
+    // console.log(`install package ${this.packageName}@${version}...`)
     return packageInstall({
       root: this.targetPath,
       pkgs: [{
@@ -97,18 +102,14 @@ class Package {
     await this.prepare()
     // 获取最新版本号
     const latestVersion = await getLatestVersion(this.packageName)
-    console.log(`update package ${this.packageName}@${latestVersion}...`)
+    // console.log(`update package ${this.packageName}@${latestVersion}...`)
     // 判断缓存目录是否包含最新版本
     // 如果缓存目录都不存在，则判断当前安装目录版本
-    if (!this.getRealCacheFilePath()) {
-      // 判断当前安装的版本是否最新,如果不是则重新安装
-      if (semver.gt(latestVersion, this.packageVersion)) {
-        await this.install(latestVersion)
-        // 安装完后，替换当前 package 版本
-        this.packageVersion = latestVersion
-      }
+    if (!this.getRealCacheFilePath(latestVersion)) {
+      await this.install(latestVersion)
+      // 安装完后，替换当前 package 版本
+      this.packageVersion = latestVersion
     }
-
   }
 
   /**
@@ -118,7 +119,6 @@ class Package {
   getRootFilePath() {
     // 先取缓存目录，没有则取安装目录
     const targetPath = this.getRealCacheFilePath() ? this.getRealCacheFilePath() : this.packagePath
-    console.log(targetPath)
     // 获取 package.json 的所在目录
     const dir = pkgDir.sync(targetPath)
     if (dir) {

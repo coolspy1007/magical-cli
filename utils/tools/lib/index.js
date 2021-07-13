@@ -4,7 +4,10 @@
  * @author 起点丶
  */
 
-
+const colors = require('colors')
+const ora = require('ora') // 命令行交互 loading spinner
+const cliSpinner = require('cli-spinner') // 命令行交互 loading spinner
+// const cliSpinners = require('cli-spinners')  // json 一些 spinner 的样式
 /**
  * 判断是否为 object
  * @param target
@@ -33,4 +36,27 @@ function spawn(command, args, options) {
 }
 
 
-module.exports = { isObject, spawn }
+async function spinnerStart(text) {
+  /** ora */
+  // const spinnerStyle = cliSpinners.dots9
+  return ora(colors.yellow(text)).start()
+
+  /** cli-spinner
+  // const Spinner = cliSpinner.Spinner;
+  // const spinner = new Spinner(`${text} %s`);
+  // spinner.setSpinnerString('|/-\\');
+  // spinner.start();
+  // return spinner
+   */
+}
+
+async function sleep(time=1000){
+  return new Promise(resolve => setTimeout(resolve, time))
+}
+
+module.exports = {
+  isObject,
+  spawn,
+  spinnerStart,
+  sleep
+}

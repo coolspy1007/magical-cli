@@ -10,7 +10,7 @@ const pathExists = require('path-exists')
 const { getLastUsableVersion } = require('@magical-cli/npm')
 // const { init } = require('@magical-cli/init')
 const exec = require('@magical-cli/exec')
-const { LOWEST_NODE_VERSION, CLI_NAME, DEFAULT_CLI_HOME,CLI_ENV_FILE_NAME } = require('./constant')
+const { DEFAULT_CLI_HOME, CLI_ENV_FILE_NAME } = require('./constant')
 const { program } = require('commander')
 
 async function core(argv) {
@@ -19,9 +19,9 @@ async function core(argv) {
     await prepare()
     registerCommander()
   } catch (e) {
-    if(program.opts().debug){
+    if (program.opts().debug) {
       console.log(e)
-    }else{
+    } else {
       log.error('', colors.red(e.message ? e.message : e))
     }
     // log.error('', e)
