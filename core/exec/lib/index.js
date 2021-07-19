@@ -10,7 +10,8 @@ const { spawn } = require('@magical-cli/tools')
 
 // 临时配置表
 const SETTING = {
-  init: '@imooc-cli/init'
+  init: '@magical-cli/init',
+  publish: '@magical-cli/publish'
 }
 // 默认缓存路径包的目录名，即包存放的目录
 const CACHE_DIR = 'dependencies'

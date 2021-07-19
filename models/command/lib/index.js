@@ -3,7 +3,7 @@ const colors = require('colors')
 const semver = require('semver')
 const log = require('@magical-cli/log')
 
-const LOWEST_NODE_VERSION = '12.0.0'
+const LOWEST_NODE_VERSION = '12.0.0' // node 最低版本
 
 class Command {
   constructor(argArr) {

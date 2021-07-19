@@ -3,6 +3,7 @@
  * @description 工具函数
  * @author 起点丶
  */
+const fs = require('fs')
 
 const colors = require('colors')
 const ora = require('ora') // 命令行交互 loading spinner
@@ -35,22 +36,103 @@ function spawn(command, args, options) {
   return require('child_process').spawn(cmd, cmdArgs, options)
 }
 
+/**
+ * 异步调用 spawn 做 error 和 exit 的监听
+ * @param command
+ * @param args
+ * @param options
+ * @returns {Promise<unknown>}
+ */
+function execAsync(command, args, options) {
+  return new Promise((resolve, reject) => {
+    const cp = spawn(command, args, options)
+    cp.on('error', err => {
+      reject(err)
+    })
+    cp.on('exit', code => {
+      resolve(code)
+    })
+  })
+}
 
-async function spinnerStart(text) {
+
+/**
+ * 格式化命令 npm install => { cmd:'npm', args:['install'] }
+ * @param cmdStr
+ * @returns {null|{args: string[], cmd: string}}
+ */
+function formatCmd(cmdStr) {
+  if (!cmdStr || typeof cmdStr !== 'string') {
+    return null
+  }
+  const installCmd = cmdStr.split(' ')
+  const cmd = installCmd[0]
+  const args = installCmd.slice(1)
+  return { cmd, args }
+}
+
+/**
+ * loading 旋转动画
+ * @param text
+ * @returns {ora.Ora}
+ */
+function spinnerStart(text) {
   /** ora */
   // const spinnerStyle = cliSpinners.dots9
   return ora(colors.yellow(text)).start()
-
   /** cli-spinner
-  // const Spinner = cliSpinner.Spinner;
-  // const spinner = new Spinner(`${text} %s`);
-  // spinner.setSpinnerString('|/-\\');
-  // spinner.start();
-  // return spinner
+   // const Spinner = cliSpinner.Spinner;
+   // const spinner = new Spinner(`${text} %s`);
+   // spinner.setSpinnerString('|/-\\');
+   // spinner.start();
+   // return spinner
    */
 }
 
-async function sleep(time=1000){
+/**
+ * 读取文件内容
+ * @param path 文件路径
+ * @param options 选项  toJson json形式读取  默认 string
+ * @returns {{type: "Buffer", data: number[]}|string|null}
+ */
+function readFile(path, options = {}) {
+  if (!fs.existsSync(path)) {
+    return null
+  }
+  const buffer = fs.readFileSync(path)
+  if (options.toJson) {
+    return buffer.toJSON()
+  } else {
+    return buffer.toString()
+  }
+}
+
+/**
+ * 写入文件
+ * @param path
+ * @param data
+ * @param reWrite 强制写入
+ * @returns {boolean}
+ */
+function writeFile(path, data, { reWrite = true } = {}) {
+  if (fs.existsSync(path)) {
+    if (reWrite) {
+      fs.writeFileSync(path, data)
+      return true
+    }
+  } else {
+    fs.writeFileSync(path, data)
+    return true
+  }
+  return false
+}
+
+/**
+ * 程序休眠
+ * @param time
+ * @returns {Promise<unknown>}
+ */
+async function sleep(time = 1000) {
   return new Promise(resolve => setTimeout(resolve, time))
 }
 
@@ -58,5 +140,9 @@ module.exports = {
   isObject,
   spawn,
   spinnerStart,
-  sleep
+  sleep,
+  formatCmd,
+  execAsync,
+  readFile,
+  writeFile
 }

@@ -46,9 +46,17 @@ function registerCommander() {
   })
 
   program
-    .command('init <projectName>')
+    .command('init [projectName]')
     .option('-f, --force', '强制初始化项目')
     .action(exec)
+
+  program
+    .command('publish')
+    .option('-rs, --refreshGitServer', '强制更新远程 Git 仓库平台')
+    .option('-rt, --refreshGitToken', '强制更新远程 Git 仓库 token')
+    .option('-ro, --refreshGitOwner', '强制更新远程 Git 仓库类型')
+    .action(exec)
+
   // debug 模式监听
   program.on('option:debug', () => {
     if (program.opts().debug) {
@@ -144,11 +152,12 @@ function checkEnv() {
       path: dotEnvPath
     })
   }
-  // 根据环境变量，创建默认配置，挂载到 process.env
   createDefaultEnv()
   log.verbose('CLI_HOME_PATH', process.env.CLI_HOME_PATH)
 }
-
+/**
+ * 根据环境变量，创建默认配置，挂载到 process.env
+ */
 function createDefaultEnv() {
   if (process.env.CLI_HOME) {
     // console.log(path.join(userHome, process.env.CLI_HOME))
@@ -177,3 +186,16 @@ async function checkPkgVersion() {
 
 
 module.exports = core
+
+// 集中捕获程序中可能存在的未被捕获的异常
+// 未处理的promise rejection
+process.on('unhandledRejection', (reason, p) => {
+  console.log('unhandledRejection', reason, p);
+  throw reason;
+});
+
+// 未被处理的错误
+process.on('uncaughtException', (error) => {
+  console.log('uncaughtException', error);
+  process.exit(1);
+});

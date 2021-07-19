@@ -1,10 +1,10 @@
 {
-  "name": "@magical-cli/init",
-  "version": "1.0.2",
-  "description": "magical-cli init",
+  "name": "@magical-cli/git",
+  "version": "1.0.0",
+  "description": "> TODO: description",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
-  "license": "MIT",
+  "license": "ISC",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -14,7 +14,7 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npm.taobao.org/"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -27,17 +27,13 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/command": "file:../../models/command",
     "@magical-cli/log": "file:../../utils/log",
-    "@magical-cli/package": "file:../../models/package",
     "@magical-cli/request": "file:../../utils/request",
     "@magical-cli/tools": "file:../../utils/tools",
-    "colors": "^1.4.0",
-    "ejs": "^3.1.6",
     "fs-extra": "^10.0.0",
-    "glob": "^7.1.7",
-    "inquirer": "^8.1.1",
-    "kebab-case": "^1.0.1",
-    "semver": "^7.3.5"
+    "inquirer": "^8.1.2",
+    "semver": "^7.3.5",
+    "simple-git": "^2.41.1",
+    "terminal-link": "^2.1.1"
   }
 }

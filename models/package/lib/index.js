@@ -107,7 +107,10 @@ class Package {
     // 如果缓存目录都不存在，则判断当前安装目录版本
     if (!this.getRealCacheFilePath(latestVersion)) {
       await this.install(latestVersion)
-      // 安装完后，替换当前 package 版本
+      // 替换当前 package 版本为最新(安装失败后不能更新版本)
+      this.packageVersion = latestVersion
+    }else{
+      // 替换当前 package 版本为最新
       this.packageVersion = latestVersion
     }
   }
