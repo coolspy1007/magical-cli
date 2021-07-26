@@ -86,7 +86,7 @@ async function exec() {
     })
     // 监听 exit
     childProcess.on('exit', e => {
-      log.verbose('命令执行完毕', e)
+      log.verbose('命令执行完毕')
       process.exit(e)
     })
   }

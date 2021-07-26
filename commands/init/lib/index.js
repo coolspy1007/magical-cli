@@ -357,17 +357,17 @@ class InitCommand extends Command {
         {
           value: TYPE_PROJECT,
           name: '项目'
-        },
-        {
-          value: TYPE_COMPONENT,
-          name: '组件'
         }
+        // {
+        //   value: TYPE_COMPONENT,
+        //   name: '组件'
+        // }
       ]
     }])
     if (type === TYPE_PROJECT) {
       // 获取用户输入的项目信息
       this.inputProjectInfo = await this.getInputProjectInfo()
-      console.log(this.inputProjectInfo)
+      // console.log(this.inputProjectInfo)
       // 获取用户选择的项目模板
       this.checkedProjectTmplate = await this.getCheckedProjectTemplate()
     } else if (type === TYPE_COMPONENT) {
@@ -442,6 +442,10 @@ class InitCommand extends Command {
       }
     })
     const inputProjectInfo = await inquirer.prompt(promptObjects)
+
+    if(inputProjectInfo.projectName && !this.projectName){
+      this.projectName = inputProjectInfo.projectName
+    }
     // 添加一个 packageName : 项目名称转换为 abc-def 格式
     let kebabName = kebabCase(this.projectName)
     inputProjectInfo.kebabName = kebabName.replace(/^-|-(?=-)/g, '')

@@ -47,7 +47,7 @@ function spawn(command, args, options) {
  * @param stderr
  * @returns {Promise<unknown>}
  */
-function execAsync(command, args, options, stdout, stderr) {
+function execAsync(command, args, options, stdout = null, stderr = null) {
   return new Promise((resolve, reject) => {
     const cp = spawn(command, args, options)
     cp.on('error', err => {
@@ -56,16 +56,12 @@ function execAsync(command, args, options, stdout, stderr) {
     cp.on('exit', code => {
       resolve(code)
     })
-    if (!stdout) {
-      stdout = () => {
-      }
+    if (stdout) {
+      cp.stdout.on('data', stdout)
     }
-    if (!stderr) {
-      stderr = () => {
-      }
+    if (stderr) {
+      cp.stderr.on('data', stderr)
     }
-    cp.stdout.on('data', stdout)
-    cp.stderr.on('data', stderr)
   })
 }
 
@@ -146,9 +142,9 @@ function writeFile(path, data, { reWrite = true } = {}) {
  * @param dir
  * @returns {null|*}
  */
-function getPackageJson(dir){
-  const pkg = path.resolve(dir,'package.json')
-  if(fs.existsSync(pkg)){
+function getPackageJson(dir) {
+  const pkg = path.resolve(dir, 'package.json')
+  if (fs.existsSync(pkg)) {
     return fse.readJsonSync(pkg)
   }
   return null
