@@ -3,7 +3,7 @@
 ## 需要在 .magical-cli 文件中配置的
 
 - `CLI_HOME` 缓存主目录文件夹名称（在cli环境变量文件中配置）.magical-cli
-- `MAGICAL_CLI_API_URL` API base_url
+- `MAGICAL_CLI_API_URL` API base_url 用户获取项目模板及云构建、云发布
 
 ## 系统用到的
 

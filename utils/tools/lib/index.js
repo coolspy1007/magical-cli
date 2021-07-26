@@ -4,7 +4,9 @@
  * @author 起点丶
  */
 const fs = require('fs')
+const path = require('path')
 
+const fse = require('fs-extra')
 const colors = require('colors')
 const ora = require('ora') // 命令行交互 loading spinner
 const cliSpinner = require('cli-spinner') // 命令行交互 loading spinner
@@ -41,9 +43,11 @@ function spawn(command, args, options) {
  * @param command
  * @param args
  * @param options
+ * @param stdout
+ * @param stderr
  * @returns {Promise<unknown>}
  */
-function execAsync(command, args, options) {
+function execAsync(command, args, options, stdout, stderr) {
   return new Promise((resolve, reject) => {
     const cp = spawn(command, args, options)
     cp.on('error', err => {
@@ -52,6 +56,16 @@ function execAsync(command, args, options) {
     cp.on('exit', code => {
       resolve(code)
     })
+    if (!stdout) {
+      stdout = () => {
+      }
+    }
+    if (!stderr) {
+      stderr = () => {
+      }
+    }
+    cp.stdout.on('data', stdout)
+    cp.stderr.on('data', stderr)
   })
 }
 
@@ -65,9 +79,9 @@ function formatCmd(cmdStr) {
   if (!cmdStr || typeof cmdStr !== 'string') {
     return null
   }
-  const installCmd = cmdStr.split(' ')
-  const cmd = installCmd[0]
-  const args = installCmd.slice(1)
+  const cmdArr = cmdStr.split(' ')
+  const cmd = cmdArr[0]
+  const args = cmdArr.slice(1)
   return { cmd, args }
 }
 
@@ -128,6 +142,20 @@ function writeFile(path, data, { reWrite = true } = {}) {
 }
 
 /**
+ * 获取 package.json 内容，不存在则返回 null
+ * @param dir
+ * @returns {null|*}
+ */
+function getPackageJson(dir){
+  const pkg = path.resolve(dir,'package.json')
+  if(fs.existsSync(pkg)){
+    return fse.readJsonSync(pkg)
+  }
+  return null
+}
+
+
+/**
  * 程序休眠
  * @param time
  * @returns {Promise<unknown>}
@@ -144,5 +172,6 @@ module.exports = {
   formatCmd,
   execAsync,
   readFile,
-  writeFile
+  writeFile,
+  getPackageJson
 }

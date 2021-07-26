@@ -55,6 +55,10 @@ function registerCommander() {
     .option('-rs, --refreshGitServer', '强制更新远程 Git 仓库平台')
     .option('-rt, --refreshGitToken', '强制更新远程 Git 仓库 token')
     .option('-ro, --refreshGitOwner', '强制更新远程 Git 仓库类型')
+    .option('-rp, --refreshGitPublish','强制更新发布平台')
+    .option(`-bc, --buildCmd [buildCmd]`, '自定义构建命令','npm run build') // <buildCmd> 会出错，原因不明
+    .option('-pd, --prod','发布正式版本')
+    .option('-ht, --history','使用 history 路由方式')
     .action(exec)
 
   // debug 模式监听
@@ -155,6 +159,7 @@ function checkEnv() {
   createDefaultEnv()
   log.verbose('CLI_HOME_PATH', process.env.CLI_HOME_PATH)
 }
+
 /**
  * 根据环境变量，创建默认配置，挂载到 process.env
  */
@@ -190,12 +195,12 @@ module.exports = core
 // 集中捕获程序中可能存在的未被捕获的异常
 // 未处理的promise rejection
 process.on('unhandledRejection', (reason, p) => {
-  console.log('unhandledRejection', reason, p);
-  throw reason;
-});
+  console.log('unhandledRejection', reason, p)
+  throw reason
+})
 
 // 未被处理的错误
 process.on('uncaughtException', (error) => {
-  console.log('uncaughtException', error);
-  process.exit(1);
-});
+  console.log('uncaughtException', error)
+  process.exit(1)
+})

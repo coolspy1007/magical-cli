@@ -64,7 +64,7 @@ class InitCommand extends Command {
       // 安装模板
       await this.handlerInstallTemplate()
       // 执行命令
-      // await this.handlerExecCommand()
+      await this.handlerExecCommand()
     } catch (err) {
       if (process.env.LOG_LEVEL === 'verbose') {
         console.log(err)

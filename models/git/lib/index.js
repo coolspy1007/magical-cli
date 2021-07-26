@@ -20,6 +20,7 @@ const GIT_TOKEN_FILE = '.git_token' // 远程仓库 token 缓存文件名
 const GIT_OWNER_FILE = '.git_owner' // 远程仓库类型 缓存文件名
 const GIT_LONGIN_FILE = '.git_login' // 远程仓库登录名 缓存文件名
 const GIT_IGNORE_FILE = '.gitignore' // .gitignore 文件名
+const GIT_PUBLISH_FILE = '.git_publish'  // 发布平台缓存文件 （OSS）
 
 // 远程仓库平台
 const GITHUB = 'github'
@@ -32,6 +33,15 @@ const REPO_OWNER_ORG = 'org'
 // 版本
 const VERSION_RELEASE = 'release'
 const VERSION_DEVELOP = 'dev'
+
+// 发布平台类型
+const GIT_PUBLISH_TYPE = [{
+  value: 'oss',
+  name: 'OSS'
+}, {
+  value: 'ssh',
+  name: '指定服务器'
+}]
 
 const GIT_OWNER_CHOICES = [
   {
@@ -55,7 +65,8 @@ class Git {
   constructor({ name, version, dir }, {
     refreshGitServer = false,
     refreshGitToken = false,
-    refreshGitOwner = false
+    refreshGitOwner = false,
+    refreshGitPublish = false
   }) {
     this.name = name // 项目名称
     this.version = version // 项目版本
@@ -68,11 +79,13 @@ class Git {
     this.owner = null // 远程仓库类型  个人 | 组织
     this.login = null // 远程仓库登录名
     this.repo = null //远程仓库名称
-    this.remote = null // 远程版本库地址
     this.branch = null // 本地开发分支
+    this.remote = null // 远程版本库地址
+    this.gitPublish = null // 发布到哪里 oss ssh
     this.refreshGitServer = refreshGitServer  // 是否强制刷新远程仓库平台
     this.refreshGitToken = refreshGitToken  // 是否强制刷新远程仓库 token
     this.refreshGitOwner = refreshGitOwner  // 是否强制刷新远程仓库类型
+    this.refreshGitPublish = refreshGitPublish  // 是否强制刷新发布平台
   }
 
   async prepare() {
@@ -86,7 +99,9 @@ class Git {
     await this.checkUserAndOrgs()
     // 检查远程仓库类型及登录名
     await this.checkGitOwner()
-    // 检查远程仓库类型并创建远程仓库
+    // 获取静态资源服务器类型
+    await this.getGitPublish()
+    // 检查并创建远程仓库
     await this.checkRepo()
     // 检查并也写入 .gitignore 文件
     this.checkGitIgnore()
@@ -102,13 +117,33 @@ class Git {
     await this.checkStash()
     // 检查代码冲突
     await this.checkConflict()
+    // 检查未提交代码
+    await this.checkNotCommitted()
     // 切换开发分支
     await this.checkoutBranch(this.branch)
     // 拉取远程 master 分支和开发分支代码
-    await this.pullRemoteMasterAndBranch(this.branch)
+    await this.pullRemoteMasterAndBranch()
     // 推送代码至远程开发分支
     await this.pushRemoteRepo(this.branch)
   }
+
+  /**
+   * 发布正式版的收尾工作
+   * 1、检查 tag，创建、发布新 tag
+   * 2、合并开发分支代码到 master
+   * 3、推送代码到远程 master 分支
+   * 4、删除本地和远程无用的开发分支
+   * @returns {Promise<void>}
+   */
+  async prodEnd() {
+    await this.checkTag()
+    await this.checkoutBranch('master')  // 切换到 master 分支
+    await this.mergeToBranch('master') // 将开发分支代码合并到 master
+    await this.pushRemoteRepo('master') // 推送代码至远程master
+    await this.deleteLocalBranch(this.branch) // 删除本地开发分支
+    await this.deleteRemoteBranch(this.branch) // 删除远程开发分支
+  }
+
 
   /**
    * 拉取远程 master 分支和开发分支代码
@@ -123,8 +158,97 @@ class Git {
     if (remoteBranchVersionList && remoteBranchVersionList.length > 0) {
       await this.pullRemoteRepo(this.branch)
       await this.checkConflict()
-    }else{
+    } else {
       log.info(`不存在远程分支 [${this.branch}]`)
+    }
+  }
+
+
+  /**
+   * 删除本地分支
+   * @param branch
+   * @returns {Promise<void>}
+   */
+  async deleteLocalBranch(branch) {
+    log.info('删除本地分支', branch)
+    await this.git.deleteLocalBranch(branch) // 删除本地分支
+    log.success('成功删除本地分支', branch)
+  }
+
+  /**
+   * 删除远程分支
+   * @param branch
+   * @returns {Promise<void>}
+   */
+  async deleteRemoteBranch(branch) {
+    log.info('删除远程分支', branch)
+    await this.git.push(['origin', '--delete', branch]) // 删除远程分支
+    log.success('成功删除远程分支', branch)
+  }
+
+  /**
+   * 合并分支
+   * @returns {Promise<void>}
+   */
+  async mergeToBranch(branch) {
+    log.info('开始合并代码', `[${this.branch}] -> [${branch}]`)
+    await this.git.mergeFromTo(this.branch, branch) // 合并代码
+    log.success('成功合并代码', `[${this.branch}] -> [${branch}]`)
+  }
+
+  /**
+   * 检查 tag 并创建、推送至远程
+   * @returns {Promise<void>}
+   */
+  async checkTag() {
+    const releaseBranch = `${VERSION_RELEASE}/${this.version}` // 远程分支名  release/1.1.0
+    const versionList = await this.getRemoteBranchVersionList(VERSION_RELEASE)  // 获取远程 release 分支所有版本
+    // 如果远程已存在当前项目版本，说明已存在同版本的 tag ，需要先删除，再创建
+    if (versionList.includes(this.version)) {
+      log.info(`远程 tag：${releaseBranch} 已存在`)
+      await this.git.push(['origin', `:refs/tags/${releaseBranch}`])  // 删除 tag
+      log.success(`成功删除远程 tag：${releaseBranch}`)
+    }
+    // 获取本地 tag ，若存在，先删除
+    const localTags = await this.git.tags()
+    if (localTags.all.includes(releaseBranch)) {
+      log.info(`本地 tag：${releaseBranch} 已存在`)
+      await this.git.tag(['-d', releaseBranch])  // 删除 tag
+      log.success(`成功删除本地 tag：${releaseBranch}`)
+    }
+    // 创建本地 tag
+    await this.git.addTag(releaseBranch)
+    log.success(`成功创建本地 tag：${releaseBranch}`)
+    await this.git.pushTags('origin')
+    log.success(`成功推送 tag：${releaseBranch} 至远程`)
+  }
+
+  /**
+   * 获取静态资源服务器类型 OSS SSH
+   * @returns {Promise<void>}
+   */
+  async getGitPublish() {
+    const gitPublishFile = this.createGitFile(GIT_PUBLISH_FILE)
+    let gitPublish = readFile(gitPublishFile)
+    if (!gitPublish || this.refreshGitPublish) {
+      gitPublish = (await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'gitPublish',
+          default: 'oss',
+          message: '请选择项目发布的平台',
+          choices: GIT_PUBLISH_TYPE
+        }
+      ])).gitPublish
+      writeFile(gitPublishFile, gitPublish)
+      log.success('git publish 发布平台写入成功')
+    } else {
+      log.success('git publish 发布平台获取成功')
+    }
+    log.verbose('git publish 发布平台', `${gitPublish} -> ${gitPublishFile}`)
+    this.gitPublish = gitPublish
+    if (!this.gitPublish) {
+      throw new Error('未获取到发布平台类型')
     }
   }
 
@@ -462,7 +586,7 @@ class Git {
     if (!remotes || !remotes.find(remote => remote.name === 'origin')) {
       log.info('添加 git remote')
       try {
-        await this.git.addRemote('origin', this.gitServer.getRemote(this.login, this.name))
+        await this.git.addRemote('origin', this.remote)
       } catch (e) {
         throw new Error('添加 remote origin 失败')
       }
@@ -571,6 +695,8 @@ class Git {
     if (!this.login) {
       throw new Error('未获取到远程仓库登录名')
     }
+    // 获取远程仓库地址
+    this.remote = this.gitServer.getRemote(this.login, this.name)
   }
 
   /**
