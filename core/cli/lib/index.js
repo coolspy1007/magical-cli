@@ -51,7 +51,7 @@ function registerCommander() {
     .action(exec)
 
   program
-    .command('publish')
+    .command('publish',)
     .option('-rs, --refreshGitServer', '强制更新远程 Git 仓库平台')
     .option('-rt, --refreshGitToken', '强制更新远程 Git 仓库 token')
     .option('-ro, --refreshGitOwner', '强制更新远程 Git 仓库类型')
