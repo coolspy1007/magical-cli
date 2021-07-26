@@ -1,6 +1,6 @@
 {
   "name": "@magical-cli/git",
-  "version": "1.1.3",
+  "version": "1.1.5",
   "description": "> TODO: description",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "@magical-cli/log": "^1.1.3",
-    "@magical-cli/request": "^1.1.3",
-    "@magical-cli/tools": "^1.1.3",
+    "@magical-cli/request": "^1.1.5",
+    "@magical-cli/tools": "^1.1.5",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.2",
     "semver": "^7.3.5",
