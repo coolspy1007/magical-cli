@@ -27,13 +27,14 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/log": "file:../../utils/log",
-    "@magical-cli/request": "file:../../utils/request",
-    "@magical-cli/tools": "file:../../utils/tools",
+    "@magical-cli/log": "^1.1.0",
+    "@magical-cli/request": "^1.1.0",
+    "@magical-cli/tools": "^1.1.0",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.2",
     "semver": "^7.3.5",
     "simple-git": "^2.41.1",
     "terminal-link": "^2.1.1"
-  }
+  },
+  "gitHead": "ac8defb617a96549534d8c9020d2cd0febaf24fc"
 }

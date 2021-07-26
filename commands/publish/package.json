@@ -27,11 +27,12 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/cloudbuild": "file:../../models/cloudbuild",
-    "@magical-cli/command": "file:../../models/command",
-    "@magical-cli/git": "file:../../models/git",
-    "@magical-cli/log": "file:../../utils/log",
+    "@magical-cli/cloudbuild": "^1.1.0",
+    "@magical-cli/command": "^1.1.0",
+    "@magical-cli/git": "^1.1.0",
+    "@magical-cli/log": "^1.1.0",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.0"
-  }
+  },
+  "gitHead": "ac8defb617a96549534d8c9020d2cd0febaf24fc"
 }

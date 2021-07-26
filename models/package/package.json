@@ -13,9 +13,6 @@
   "files": [
     "lib"
   ],
-  "publishConfig": {
-    "registry": "https://registry.npm.taobao.org/"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/coolspy1007/magical-cli.git"
@@ -27,11 +24,12 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/npm": "file:../../utils/npm",
-    "@magical-cli/tools": "file:../../utils/tools",
+    "@magical-cli/npm": "^1.1.0",
+    "@magical-cli/tools": "^1.1.0",
     "fs-extra": "^10.0.0",
     "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0",
     "semver": "^7.3.5"
-  }
+  },
+  "gitHead": "ac8defb617a96549534d8c9020d2cd0febaf24fc"
 }
