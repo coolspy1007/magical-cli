@@ -1,6 +1,6 @@
 {
   "name": "@magical-cli/cloudbuild",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "cloud build",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
@@ -24,9 +24,9 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/log": "^1.1.0",
-    "@magical-cli/request": "^1.1.0",
-    "@magical-cli/tools": "^1.1.0",
+    "@magical-cli/log": "^1.1.1",
+    "@magical-cli/request": "^1.1.1",
+    "@magical-cli/tools": "^1.1.1",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.2",

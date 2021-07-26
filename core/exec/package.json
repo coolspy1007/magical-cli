@@ -1,6 +1,6 @@
 {
   "name": "@magical-cli/exec",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "magical-cli execute ",
   "author": "起点 <coolspy@qq.com>",
   "homepage": "https://github.com/coolspy1007/magical-cli#readme",
@@ -24,9 +24,9 @@
     "url": "https://github.com/coolspy1007/magical-cli/issues"
   },
   "dependencies": {
-    "@magical-cli/log": "^1.1.0",
-    "@magical-cli/package": "^1.1.0",
-    "@magical-cli/tools": "^1.1.0"
+    "@magical-cli/log": "^1.1.1",
+    "@magical-cli/package": "^1.1.1",
+    "@magical-cli/tools": "^1.1.1"
   },
   "gitHead": "ac8defb617a96549534d8c9020d2cd0febaf24fc"
 }
