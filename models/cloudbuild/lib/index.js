@@ -15,7 +15,7 @@ const { getOssFiles } = require('./api')
 
 const CONNECT_TIME_OUT = 5 * 1000 // socket 超时时间，5s 连不上自动断开
 const TIME_OUT = 5 * 60 // 允许构建时长 5分钟 时间过后自动断开 socket 连接
-const WS_SERVER = process.env.MAGICAL_CLI_API_URL ? process.env.MAGICAL_CLI_API_URL : 'http://120.78.206.25:7001'
+const WS_SERVER = process.env.MAGICAL_CLI_API_URL ? process.env.MAGICAL_CLI_API_URL : 'http://120.78.206.254:7001'
 const SSH_DIR = 'ssh'  // 上传服务器缓存目录
 const OSS_PROJECT_DIR = 'oss_project' // 从 oss 下载的文件缓存目录
 // const WS_SERVER = 'http://127.0.0.1:7002'
@@ -115,7 +115,7 @@ class CloudBuild {
       await this.sshPublish()
     }
     // 当选择发布正式版本时，在成功发布完成后进行收尾工作（打 tag，合并代码到 master，删除开发分支）
-    if(this.prod){
+    if (this.prod) {
       await this.git.prodEnd()
     }
     // 所有任务完成后打印生成的链接地址
@@ -399,6 +399,7 @@ class CloudBuild {
    */
   init() {
     return new Promise((resolve, reject) => {
+      log.verbose('WS_SERVER', WS_SERVER)
       // 连接 socket 并携带 git 相关信息
       const socket = socketIo(WS_SERVER, {
         query: {
