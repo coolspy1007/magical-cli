@@ -5,7 +5,10 @@
 - 包含自动化提交、创建分支、升级版本、合并代码，打 tag 等，规范并标准化 git flow
 - 一条指令实现云构建、发布上线，并生成可访问链接，发布流程标准化并提高发布上线效率
 
-Options:
+## 安装
+`npm install @magical-cli/core -g`
+
+## Options:
 
 -V, --version                   显示当前版本
 
@@ -22,7 +25,7 @@ Options:
 
 #### Options:
 
--f, --force 强制初始化项目 
+-f, --force 强制初始化项目
 
 -h, --help 显示命令帮助信息
 

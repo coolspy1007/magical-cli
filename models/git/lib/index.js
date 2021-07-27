@@ -601,7 +601,33 @@ class Git {
   checkGitIgnore() {
     const gitignoreFile = path.resolve(this.dir, GIT_IGNORE_FILE)
     if (!fs.existsSync(gitignoreFile)) {
-      const ignoreTemplate = readFile(path.resolve(__dirname, GIT_IGNORE_FILE))
+      // const ignoreTemplate = readFile(path.resolve(__dirname, GIT_IGNORE_FILE))
+      const ignoreTemplate =
+`.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs
+*.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+`
       const res = writeFile(gitignoreFile, ignoreTemplate)
       if (res) {
         log.success('.gitignore 文件写入成功')
